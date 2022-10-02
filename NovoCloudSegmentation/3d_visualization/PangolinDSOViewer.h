@@ -55,11 +55,8 @@ public:
     
 private:
     PointCloudRef cloud;
-    cv::Point3d kfGlobalOffset;
     std::unordered_map<Type, KeyFrameDisplay *> kfPoints;
     
-    TrajectoryDrawer normalsTD;
-    TrajectoryDrawer normalsEgoTD;
     MatrixChnageHandler *kbHandler;
     
     bool running;
@@ -69,21 +66,17 @@ private:
 //    std::thread runThread;
 
     void drawAll(float ptSize);
-    void drawCoordSystem(float size);
     
-    void customPredictSigns3dPose();
     void saveParametrsToFile();
     void loadParametrsToFile();
     void resetCameraPosition(pangolin::OpenGlRenderState &camera);
     
     // render settings
     bool settings_showKFCameras;
-    bool settings_colorizeAverage;
     float settings_groundPointsSize;
     float settings_cracksPointsSize;
     bool settings_displaySegmentation;
-    bool settings_displayAntennaOrientation;
     
-    void runAntenaOrientationCalculation();
+    void runProcessCloud();
 };
 

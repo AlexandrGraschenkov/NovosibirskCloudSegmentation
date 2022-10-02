@@ -11,4 +11,4 @@
 #include "cloud.hpp"
 #include "KeyFrameDisplay.h"
 
-void generateKeyframes(PointCloudRef cloud, std::unordered_map<Type, KeyFrameDisplay *> &kfMap, float keepPercentSize = 1.0);
+void generateKeyframes(PointCloudRef cloud, std::unordered_map<Type, KeyFrameDisplay *> &kfMap, float keepPercentSize = 1.0, std::vector<Type> *overrideTypes = nullptr);

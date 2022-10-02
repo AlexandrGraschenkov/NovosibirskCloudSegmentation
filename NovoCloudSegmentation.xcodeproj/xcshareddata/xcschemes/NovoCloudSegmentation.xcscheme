@@ -50,6 +50,13 @@
             ReferencedContainer = "container:NovoCloudSegmentation.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "PANGOLIN_WINDOW_URI"
+            value = "default:[default_font_size=30]"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

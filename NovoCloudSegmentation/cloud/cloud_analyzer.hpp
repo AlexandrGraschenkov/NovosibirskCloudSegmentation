@@ -11,4 +11,8 @@
 #include <stdio.h>
 #include "cloud.hpp"
 
+namespace pcl_algo {
+void processCloud(PointCloudRef cloud, std::vector<Type> &outTypes);
+} // namespace pcl_algo
+
 #endif /* cloud_analyzer_hpp */

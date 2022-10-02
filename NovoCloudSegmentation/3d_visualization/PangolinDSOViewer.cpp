@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <opencv2/imgproc.hpp>
 #include "cloud_to_kf.hpp"
+#include <pangolin/display/default_font.h>
 
 
 using namespace std;
@@ -58,34 +59,6 @@ void PangolinDSOViewer::updateCloud(PointCloudRef cloud, float keepPercentSize) 
     lock_guard<mutex> lock(framesMtx);
     generateKeyframes(cloud, kfPoints, keepPercentSize);
     this->cloud = cloud;
-//    kfGlobalOffset = cloud->operator()(0).pos;
-//    this->cloud = cloud;
-//    int count = keepPercentSize * cloud->size();
-//    vector<Point3f> points(count);
-//    vector<Vec3f> colors(count);
-//    vector<Vec3f> segColors(count);
-//
-//    float pointStep = 1 / keepPercentSize;
-//
-//    for (size_t i = 0; i < points.size(); i++) {
-//        size_t ii = i * pointStep;
-//        const auto &p = cloud->operator()(ii);
-//        points[i] = p.pos - kfGlobalOffset;
-//        colors[i] = Vec3f(p.color[2]/255.f, p.color[1]/255.f, p.color[0]/255.f);
-//        auto segColor = sett.getColor(cloud->type(ii));
-//        segColors[i] = Vec3f(segColor[2]/255.f, segColor[1]/255.f, segColor[0]/255.f);
-//    }
-//
-//    auto origKf = new KeyFrameDisplay(MyMatrix(), points);
-//    origKf->colors = move(colors);
-//    origKf->updateColors();
-//
-//    auto segKf = new KeyFrameDisplay(MyMatrix(), points);
-//    segKf->colors = move(segColors);
-//    segKf->updateColors();
-//
-//    origCloudPoints.push_back(origKf);
-//    segCloudPoints.push_back(segKf);
 }
 
 PangolinDSOViewer::~PangolinDSOViewer()
@@ -122,7 +95,7 @@ void PangolinDSOViewer::drawAll(float ptSize) {
         
         auto color = colorForType(kv.first);
         float *colorPtr = settings_displaySegmentation ? &color[0] : NULL;
-        kv.second->drawPC(3, colorPtr);
+        kv.second->drawPC(ptSize, colorPtr);
     }
     
     
@@ -168,7 +141,8 @@ inline void MyReadFramebuffer(pangolin::TypedImage &buffer, const pangolin::View
 
 void PangolinDSOViewer::run()
 {
-    const int UI_WIDTH = 160;
+//    const int UI_WIDTH = 160;
+    const int UI_WIDTH = 20* pangolin::default_font().MaxWidth();
 
     
     // 3D visualization
@@ -186,15 +160,12 @@ void PangolinDSOViewer::run()
     pangolin::View &panel = pangolin::CreatePanel("ui");
     panel.SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
     
-    
     pangolin::Var<bool> settings_resetCamPosition("ui.Reset Camera",false,false);
-    pangolin::Var<float> settings_pointSize("ui.Point size", 4, 1, 20, false);
+    pangolin::Var<float> settings_pointSize("ui.Point size", 3, 0.1, 10, false);
     
-    pangolin::Var<bool> settings_orientationAntenna("ui.Find Orientation",false,false);
+    pangolin::Var<bool> settings_processCloud("ui.Process cloud",false,false);
     
     pangolin::Var<bool> settings_showSegmentation("ui.Segmentation",false,true);
-    pangolin::Var<bool> settings_showOrientation("ui.Antenna Orientation",true,true);
-    pangolin::Var<bool> settings_saveFile("ui.Save to file",false,false);
     
 
 
@@ -215,20 +186,13 @@ void PangolinDSOViewer::run()
 
         // update parameters
         settings_displaySegmentation = settings_showSegmentation.Get();
-        settings_displayAntennaOrientation = settings_showOrientation.Get();
         bool changes = false;
         
         if (pangolin::Pushed(settings_resetCamPosition)) {
             resetCameraPosition(Visualization3D_camera);
         }
-        if (pangolin::Pushed(settings_orientationAntenna)) {
-            runAntenaOrientationCalculation();
-        }
-        if (pangolin::Pushed(settings_saveFile)) {
-//            writeToFile(antennaOrientations, 122, "/Users/alex/Downloads/Materials/result/result.csv");
-//            writeToFile(antennaOrientations, 155, "/Users/alex/Downloads/Вышка_Трубостойка_00645_210622/results.csv");
-//            writeDxf(antennaOrientations, "/Users/alex/Downloads/Materials/final_cloud/results.dxf");
-//            writeShp(antennaOrientations, "/Users/alex/Downloads/Вышка_Трубостойка_00645_210622/results.shp");
+        if (pangolin::Pushed(settings_processCloud)) {
+            runProcessCloud();
         }
         
         if (changes) {
@@ -259,5 +223,5 @@ void PangolinDSOViewer::close()
 
 // MARK: Cloud analyze algorithms
 
-void PangolinDSOViewer::runAntenaOrientationCalculation() {
+void PangolinDSOViewer::runProcessCloud() {
 }
