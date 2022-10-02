@@ -1,0 +1,505 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FAEF33B128E8B0E10063C26A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B028E8B0E10063C26A /* main.cpp */; };
+		FAEF33C428E8B1570063C26A /* MatrixChnageHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B828E8B1570063C26A /* MatrixChnageHandler.cpp */; };
+		FAEF33C528E8B1570063C26A /* TrajectoryDrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B928E8B1570063C26A /* TrajectoryDrawer.cpp */; };
+		FAEF33C728E8B1570063C26A /* PangolinDSOViewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33BE28E8B1570063C26A /* PangolinDSOViewer.cpp */; };
+		FAEF33C828E8B1570063C26A /* SimpleMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33C228E8B1570063C26A /* SimpleMatrix.cpp */; };
+		FAEF33C928E8B1570063C26A /* KeyFrameDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33C328E8B1570063C26A /* KeyFrameDisplay.cpp */; };
+		FAEF33CD28E8D7790063C26A /* cloud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33CB28E8D7790063C26A /* cloud.cpp */; };
+		FAEF33E228E977070063C26A /* cloud_to_kf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33DA28E977070063C26A /* cloud_to_kf.cpp */; };
+		FAEF33E628E9880A0063C26A /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAEF33E528E9880A0063C26A /* OpenGL.framework */; };
+		FAEF33EA28E99E1A0063C26A /* cloud_analyzer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33E828E99E1A0063C26A /* cloud_analyzer.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FAEF33AB28E8B0E10063C26A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		FAEF33AD28E8B0E10063C26A /* NovoCloudSegmentation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NovoCloudSegmentation; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAEF33B028E8B0E10063C26A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		FAEF33B828E8B1570063C26A /* MatrixChnageHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MatrixChnageHandler.cpp; sourceTree = "<group>"; };
+		FAEF33B928E8B1570063C26A /* TrajectoryDrawer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrajectoryDrawer.cpp; sourceTree = "<group>"; };
+		FAEF33BB28E8B1570063C26A /* SimpleMatrix.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimpleMatrix.hpp; sourceTree = "<group>"; };
+		FAEF33BC28E8B1570063C26A /* PangolinDSOViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PangolinDSOViewer.h; sourceTree = "<group>"; };
+		FAEF33BD28E8B1570063C26A /* KeyFrameDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyFrameDisplay.h; sourceTree = "<group>"; };
+		FAEF33BE28E8B1570063C26A /* PangolinDSOViewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PangolinDSOViewer.cpp; sourceTree = "<group>"; };
+		FAEF33BF28E8B1570063C26A /* MatrixChnageHandler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MatrixChnageHandler.hpp; sourceTree = "<group>"; };
+		FAEF33C028E8B1570063C26A /* TrajectoryDrawer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TrajectoryDrawer.hpp; sourceTree = "<group>"; };
+		FAEF33C228E8B1570063C26A /* SimpleMatrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleMatrix.cpp; sourceTree = "<group>"; };
+		FAEF33C328E8B1570063C26A /* KeyFrameDisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyFrameDisplay.cpp; sourceTree = "<group>"; };
+		FAEF33CB28E8D7790063C26A /* cloud.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cloud.cpp; sourceTree = "<group>"; };
+		FAEF33CC28E8D7790063C26A /* cloud.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cloud.hpp; sourceTree = "<group>"; };
+		FAEF33D128E977070063C26A /* tests.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tests.hpp; sourceTree = "<group>"; };
+		FAEF33D228E977070063C26A /* sophus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = sophus.hpp; sourceTree = "<group>"; };
+		FAEF33D328E977070063C26A /* se2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = se2.hpp; sourceTree = "<group>"; };
+		FAEF33D428E977070063C26A /* se3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = se3.hpp; sourceTree = "<group>"; };
+		FAEF33D528E977070063C26A /* rxso3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = rxso3.hpp; sourceTree = "<group>"; };
+		FAEF33D628E977070063C26A /* so2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = so2.hpp; sourceTree = "<group>"; };
+		FAEF33D728E977070063C26A /* sim3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = sim3.hpp; sourceTree = "<group>"; };
+		FAEF33D828E977070063C26A /* so3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = so3.hpp; sourceTree = "<group>"; };
+		FAEF33D928E977070063C26A /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
+		FAEF33DA28E977070063C26A /* cloud_to_kf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cloud_to_kf.cpp; sourceTree = "<group>"; };
+		FAEF33E028E977070063C26A /* cloud_to_kf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cloud_to_kf.hpp; sourceTree = "<group>"; };
+		FAEF33E528E9880A0063C26A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		FAEF33E728E988180063C26A /* NovoCloudSegmentation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovoCloudSegmentation.entitlements; sourceTree = "<group>"; };
+		FAEF33E828E99E1A0063C26A /* cloud_analyzer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cloud_analyzer.cpp; sourceTree = "<group>"; };
+		FAEF33E928E99E1A0063C26A /* cloud_analyzer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cloud_analyzer.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAEF33AA28E8B0E10063C26A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAEF33E628E9880A0063C26A /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FAEF33A428E8B0E10063C26A = {
+			isa = PBXGroup;
+			children = (
+				FAEF33AF28E8B0E10063C26A /* NovoCloudSegmentation */,
+				FAEF33AE28E8B0E10063C26A /* Products */,
+				FAEF33E428E9880A0063C26A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		FAEF33AE28E8B0E10063C26A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33AD28E8B0E10063C26A /* NovoCloudSegmentation */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAEF33AF28E8B0E10063C26A /* NovoCloudSegmentation */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33E728E988180063C26A /* NovoCloudSegmentation.entitlements */,
+				FAEF33B028E8B0E10063C26A /* main.cpp */,
+				FAEF33CE28E977070063C26A /* utils */,
+				FAEF33CA28E8D7670063C26A /* cloud */,
+				FAEF33B728E8B1570063C26A /* 3d_visualization */,
+			);
+			path = NovoCloudSegmentation;
+			sourceTree = "<group>";
+		};
+		FAEF33B728E8B1570063C26A /* 3d_visualization */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33BD28E8B1570063C26A /* KeyFrameDisplay.h */,
+				FAEF33C328E8B1570063C26A /* KeyFrameDisplay.cpp */,
+				FAEF33BF28E8B1570063C26A /* MatrixChnageHandler.hpp */,
+				FAEF33B828E8B1570063C26A /* MatrixChnageHandler.cpp */,
+				FAEF33C028E8B1570063C26A /* TrajectoryDrawer.hpp */,
+				FAEF33B928E8B1570063C26A /* TrajectoryDrawer.cpp */,
+				FAEF33BB28E8B1570063C26A /* SimpleMatrix.hpp */,
+				FAEF33C228E8B1570063C26A /* SimpleMatrix.cpp */,
+				FAEF33BC28E8B1570063C26A /* PangolinDSOViewer.h */,
+				FAEF33BE28E8B1570063C26A /* PangolinDSOViewer.cpp */,
+			);
+			path = 3d_visualization;
+			sourceTree = "<group>";
+		};
+		FAEF33CA28E8D7670063C26A /* cloud */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33DA28E977070063C26A /* cloud_to_kf.cpp */,
+				FAEF33E028E977070063C26A /* cloud_to_kf.hpp */,
+				FAEF33CB28E8D7790063C26A /* cloud.cpp */,
+				FAEF33CC28E8D7790063C26A /* cloud.hpp */,
+				FAEF33E828E99E1A0063C26A /* cloud_analyzer.cpp */,
+				FAEF33E928E99E1A0063C26A /* cloud_analyzer.hpp */,
+			);
+			path = cloud;
+			sourceTree = "<group>";
+		};
+		FAEF33CE28E977070063C26A /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33D028E977070063C26A /* sophus */,
+				FAEF33D928E977070063C26A /* json.hpp */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		FAEF33D028E977070063C26A /* sophus */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33D128E977070063C26A /* tests.hpp */,
+				FAEF33D228E977070063C26A /* sophus.hpp */,
+				FAEF33D328E977070063C26A /* se2.hpp */,
+				FAEF33D428E977070063C26A /* se3.hpp */,
+				FAEF33D528E977070063C26A /* rxso3.hpp */,
+				FAEF33D628E977070063C26A /* so2.hpp */,
+				FAEF33D728E977070063C26A /* sim3.hpp */,
+				FAEF33D828E977070063C26A /* so3.hpp */,
+			);
+			path = sophus;
+			sourceTree = "<group>";
+		};
+		FAEF33E428E9880A0063C26A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF33E528E9880A0063C26A /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FAEF33AC28E8B0E10063C26A /* NovoCloudSegmentation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAEF33B428E8B0E10063C26A /* Build configuration list for PBXNativeTarget "NovoCloudSegmentation" */;
+			buildPhases = (
+				FAEF33A928E8B0E10063C26A /* Sources */,
+				FAEF33AA28E8B0E10063C26A /* Frameworks */,
+				FAEF33AB28E8B0E10063C26A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NovoCloudSegmentation;
+			productName = NovoCloudSegmentation;
+			productReference = FAEF33AD28E8B0E10063C26A /* NovoCloudSegmentation */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FAEF33A528E8B0E10063C26A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					FAEF33AC28E8B0E10063C26A = {
+						CreatedOnToolsVersion = 13.3;
+					};
+				};
+			};
+			buildConfigurationList = FAEF33A828E8B0E10063C26A /* Build configuration list for PBXProject "NovoCloudSegmentation" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FAEF33A428E8B0E10063C26A;
+			productRefGroup = FAEF33AE28E8B0E10063C26A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAEF33AC28E8B0E10063C26A /* NovoCloudSegmentation */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAEF33A928E8B0E10063C26A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAEF33C928E8B1570063C26A /* KeyFrameDisplay.cpp in Sources */,
+				FAEF33EA28E99E1A0063C26A /* cloud_analyzer.cpp in Sources */,
+				FAEF33CD28E8D7790063C26A /* cloud.cpp in Sources */,
+				FAEF33C828E8B1570063C26A /* SimpleMatrix.cpp in Sources */,
+				FAEF33B128E8B0E10063C26A /* main.cpp in Sources */,
+				FAEF33C428E8B1570063C26A /* MatrixChnageHandler.cpp in Sources */,
+				FAEF33C728E8B1570063C26A /* PangolinDSOViewer.cpp in Sources */,
+				FAEF33E228E977070063C26A /* cloud_to_kf.cpp in Sources */,
+				FAEF33C528E8B1570063C26A /* TrajectoryDrawer.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FAEF33B228E8B0E10063C26A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FAEF33B328E8B0E10063C26A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FAEF33B528E8B0E10063C26A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NovoCloudSegmentation/NovoCloudSegmentation.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RE82W8HD52;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					_OSX_,
+				);
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/opencv4,
+					"/usr/local/Cellar/pcl/include/pcl-1.12",
+					"/usr/local/opt/pcl/include/pcl-1.12",
+					/usr/local/include/eigen3,
+					/opt/homebrew/Cellar/flann/1.9.1_11/include,
+					/usr/local/opt/flann/include,
+					/usr/local/include,
+					/usr/local/opt/glew/include,
+					/opt/homebrew/Cellar/glew/2.2.0_1/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/Cellar/pcl/lib,
+					/usr/local/opt/pcl/lib,
+					/opt/homebrew/Cellar/flann/1.9.1_11/lib,
+					/usr/local/opt/flann/lib,
+					/usr/local/opt/glew/lib,
+					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
+					/usr/local/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-lopencv_core",
+					"-lopencv_highgui",
+					"-lopencv_imgproc",
+					"-lopencv_calib3d",
+					"-lopencv_videoio",
+					"-lopencv_imgcodecs",
+					"-lpcl_search",
+					"-lpcl_kdtree",
+					"-lpcl_common",
+					"-lpcl_features",
+					"-lpcl_segmentation",
+					"-lflann",
+					"-lpango_windowing",
+					"-lpango_core",
+					"-lpango_display",
+					"-lpango_geometry",
+					"-lpango_glgeometry",
+					"-lpango_image",
+					"-lpango_opengl",
+					"-lpango_packetstream",
+					"-lpango_plot",
+					"-lpango_python",
+					"-lpango_scene",
+					"-lpango_tools",
+					"-lpango_vars",
+					"-lpango_video",
+					"-ldxfrw",
+					"-lshp",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		FAEF33B628E8B0E10063C26A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NovoCloudSegmentation/NovoCloudSegmentation.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RE82W8HD52;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = _OSX_;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include/opencv4,
+					"/usr/local/Cellar/pcl/include/pcl-1.12",
+					"/usr/local/opt/pcl/include/pcl-1.12",
+					/usr/local/include/eigen3,
+					/opt/homebrew/Cellar/flann/1.9.1_11/include,
+					/usr/local/opt/flann/include,
+					/usr/local/include,
+					/usr/local/opt/glew/include,
+					/opt/homebrew/Cellar/glew/2.2.0_1/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/Cellar/pcl/lib,
+					/usr/local/opt/pcl/lib,
+					/opt/homebrew/Cellar/flann/1.9.1_11/lib,
+					/usr/local/opt/flann/lib,
+					/usr/local/opt/glew/lib,
+					/opt/homebrew/Cellar/glew/2.2.0_1/lib,
+					/usr/local/lib,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-lopencv_core",
+					"-lopencv_highgui",
+					"-lopencv_imgproc",
+					"-lopencv_calib3d",
+					"-lopencv_videoio",
+					"-lopencv_imgcodecs",
+					"-lpcl_search",
+					"-lpcl_kdtree",
+					"-lpcl_common",
+					"-lpcl_features",
+					"-lpcl_segmentation",
+					"-lflann",
+					"-lpango_windowing",
+					"-lpango_core",
+					"-lpango_display",
+					"-lpango_geometry",
+					"-lpango_glgeometry",
+					"-lpango_image",
+					"-lpango_opengl",
+					"-lpango_packetstream",
+					"-lpango_plot",
+					"-lpango_python",
+					"-lpango_scene",
+					"-lpango_tools",
+					"-lpango_vars",
+					"-lpango_video",
+					"-ldxfrw",
+					"-lshp",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FAEF33A828E8B0E10063C26A /* Build configuration list for PBXProject "NovoCloudSegmentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAEF33B228E8B0E10063C26A /* Debug */,
+				FAEF33B328E8B0E10063C26A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAEF33B428E8B0E10063C26A /* Build configuration list for PBXNativeTarget "NovoCloudSegmentation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAEF33B528E8B0E10063C26A /* Debug */,
+				FAEF33B628E8B0E10063C26A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FAEF33A528E8B0E10063C26A /* Project object */;
+}
