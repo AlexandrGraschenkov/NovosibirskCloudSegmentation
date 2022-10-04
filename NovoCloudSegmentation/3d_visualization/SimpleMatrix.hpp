@@ -13,7 +13,7 @@
 #include <math.h>
 #include <Eigen/Geometry>
 #include <opencv2/core.hpp>
-#include "sim3.hpp"
+#include "../utils/sophus/sim3.hpp"
 #include <pangolin/pangolin.h>
 
 

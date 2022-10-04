@@ -31,10 +31,10 @@
 #include <thread>
 #include <unordered_map>
 #include <opencv2/highgui.hpp>
-#include "cloud.hpp"
+#include "../cloud/cloud.hpp"
 
 #include "TrajectoryDrawer.hpp"
-#include "cloud_analyzer.hpp"
+#include "../cloud/cloud_analyzer.hpp"
 
 
 class PangolinDSOViewer

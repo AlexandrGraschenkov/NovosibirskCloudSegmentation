@@ -27,7 +27,7 @@
 
 #include <Eigen/Core>
 #include <pangolin/pangolin.h>
-#include "json.hpp"
+#include "../utils/json.hpp"
 
 #include <sstream>
 #include <fstream>

@@ -2,6 +2,7 @@
 
 datasets/*_dataset_*
 .vscode
+.idea
 
 # XCode
 UserInterfaceState.xcuserstate
@@ -9,3 +10,5 @@ Breakpoints_v2.xcbkptlist
 Pods
 
 build
+cmake-build-debug
+cmake-build-release

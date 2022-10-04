@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "cloud/cloud.hpp"
-#include "PangolinDSOViewer.h"
+#include "3d_visualization/PangolinDSOViewer.h"
 
 using namespace std;
 using namespace cv;
