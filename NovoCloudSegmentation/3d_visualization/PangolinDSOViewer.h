@@ -34,6 +34,7 @@
 #include "cloud.hpp"
 
 #include "TrajectoryDrawer.hpp"
+#include "cloud_analyzer.hpp"
 
 
 class PangolinDSOViewer
@@ -52,10 +53,13 @@ public:
     void prepare();
     
     void updateCloud(PointCloudRef cloud, float keepPercentSize);
+    std::string origCloudPath;
     
 private:
     PointCloudRef cloud;
+    std::vector<pcl_algo::PointInfo> cloudFeatures;
     std::unordered_map<Type, KeyFrameDisplay *> kfPoints;
+    std::unordered_map<Type, KeyFrameDisplay *> kfPointsProcessed;
     
     MatrixChnageHandler *kbHandler;
     
@@ -76,7 +80,10 @@ private:
     float settings_groundPointsSize;
     float settings_cracksPointsSize;
     bool settings_displaySegmentation;
+    bool settings_displayProcessed;
     
     void runProcessCloud();
+    void generateFeatures();
+    void saveFeatures();
 };
 

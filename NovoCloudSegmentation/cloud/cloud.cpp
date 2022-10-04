@@ -108,21 +108,33 @@ PointCloudRef readCSV(const std::string &fullPath, bool useCache) {
     vector<string> rows = getNextLineAndSplitIntoTokens(file);
     bool withClass = rows.back() == "Class";
     PointCloud result;
-    if (useCache && readCache(fullPath, result)) {
+    if (useCache && readCache(fullPath, result)
+//        && false
+        ) {
         cout << "Loaded from cache" << endl;
+        
+        auto values = getNextLineAndSplitIntoTokens(file);
+        Point3d p(stod(values[1]), stod(values[2]), stod(values[3]));
+        result.offset = p;
         return make_shared<PointCloud>(result);
     }
     
     // read csv
+    bool setZero = true;
     while (true) {
         auto values = getNextLineAndSplitIntoTokens(file);
         if (values.size() != rows.size()) break;
         result.ids.push_back(stoi(values[0]));
         Point3d p(stod(values[1]), stod(values[2]), stod(values[3]));
-        if (result.points.size() == 0) {
+        if (setZero) {
+            setZero = false;
             result.offset = p;
         }
-        result.points.push_back(p - result.offset);
+        p -= result.offset;
+//        if (p.x - p.y < 70) continue; //
+//        if ( - p.x - p.y > 10) continue;
+//        if (p.x + p.y > 10) continue;
+        result.points.push_back(p);
         result.reflectance.push_back(stof(values[4]));
         if (withClass) {
             result.classes.push_back((Type)stoi(values[5]));
@@ -141,7 +153,7 @@ cv::Vec3f colorForType(Type t) {
             return Vec3f(0.6, 0.5, 0.1);
             break;
         case TypeSupports:
-            return Vec3f(0, 0.2, 1);
+            return Vec3f(0.6, 0.0, 0.8);
             break;
         case TypeGreenery:
             return Vec3f(0.1, 0.9, 0.1);
@@ -153,7 +165,7 @@ cv::Vec3f colorForType(Type t) {
             return Vec3f(0, 0, 0.9);
             break;
         case TypeNoise:
-            return Vec3f(0.4, 0.1, 0.1);
+            return Vec3f(0.7, 0.1, 0.1);
             break;
             
         default:
