@@ -54,18 +54,23 @@ public:
     
     void updateCloud(PointCloudRef cloud, float keepPercentSize);
     std::string origCloudPath;
+    std::string predictionsPath;
     
 private:
     PointCloudRef cloud;
     std::vector<pcl_algo::PointInfo> cloudFeatures;
     std::unordered_map<Type, KeyFrameDisplay *> kfPoints;
     std::unordered_map<Type, KeyFrameDisplay *> kfPointsProcessed;
+    KeyFrameDisplay *errorPointsKf = nullptr;
+    std::vector<Type> processedTypes;
+    float lastAcc = 0;
     
     MatrixChnageHandler *kbHandler;
     
     bool running;
     int w,h;
     std::mutex framesMtx;
+    
     
 //    std::thread runThread;
 
@@ -78,12 +83,15 @@ private:
     // render settings
     bool settings_showKFCameras;
     float settings_groundPointsSize;
-    float settings_cracksPointsSize;
+    float settings_errorPointsSize;
     bool settings_displaySegmentation;
     bool settings_displayProcessed;
     
     void runProcessCloud();
     void generateFeatures();
     void saveFeatures();
+    void loadPredictions();
+    float calculateAcuracy();
+    void updatePredictions();
 };
 

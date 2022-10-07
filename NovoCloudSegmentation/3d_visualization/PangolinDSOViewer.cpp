@@ -9,6 +9,7 @@
 #include <pangolin/display/default_font.h>
 #include <iomanip>
 #include <iostream>
+#include "../utils/confusion_matrix.hpp"
 
 
 using namespace std;
@@ -98,7 +99,10 @@ void PangolinDSOViewer::drawAll(float ptSize) {
         float *colorPtr = settings_displaySegmentation ? &color[0] : NULL;
         kv.second->drawPC(ptSize, colorPtr);
     }
-    
+    if (errorPointsKf) {
+        float color[3] = {1, 0.2, 0.2};
+        errorPointsKf->drawPC(settings_errorPointsSize, color);
+    }
     
     glLineWidth(10);
     pangolin::glDrawAxis(2);
@@ -165,11 +169,15 @@ void PangolinDSOViewer::run()
     pangolin::Var<float> settings_pointSize("ui.Point size", 3, 0.1, 10, false);
     
     pangolin::Var<bool> settings_processCloud("ui.Process cloud",false,false);
+    pangolin::Var<bool> settings_loadPredictions("ui.Load predictions",false,false);
     pangolin::Var<bool> settings_generateFeatures("ui.Generate features",false,false);
     pangolin::Var<bool> settings_saveFeatures("ui.Save features",false,false);
     
     pangolin::Var<bool> settings_showSegmentation("ui.Segmentation",false,true);
     pangolin::Var<bool> settings_showProcessed("ui.Processed",false,true);
+    pangolin::Var<float> settings_accuracy("ui.Accuracy", 0, false);
+    
+    pangolin::Var<float> settings_errorPointSize("ui.Error Point size", 3, 0.1, 10, false);
     
 
 
@@ -191,6 +199,7 @@ void PangolinDSOViewer::run()
         // update parameters
         settings_displaySegmentation = settings_showSegmentation.Get();
         settings_displayProcessed = settings_showProcessed.Get();
+        this->settings_errorPointsSize = settings_errorPointSize.Get();
         bool changes = false;
         
         if (pangolin::Pushed(settings_resetCamPosition)) {
@@ -199,6 +208,12 @@ void PangolinDSOViewer::run()
         if (pangolin::Pushed(settings_processCloud)) {
             runProcessCloud();
             settings_showProcessed = settings_displayProcessed;
+            settings_accuracy = lastAcc;
+        }
+        if (pangolin::Pushed(settings_loadPredictions)) {
+            loadPredictions();
+            settings_showProcessed = settings_displayProcessed;
+            settings_accuracy = lastAcc;
         }
         if (pangolin::Pushed(settings_generateFeatures)) {
             generateFeatures();
@@ -238,8 +253,7 @@ void PangolinDSOViewer::close()
 void PangolinDSOViewer::runProcessCloud() {
     vector<Type> newTypes;
     pcl_algo::processCloud(cloud, newTypes);
-    generateKeyframes(cloud, kfPointsProcessed, 1, &newTypes);
-    settings_displayProcessed = true;
+    updatePredictions();
 }
 
 
@@ -253,9 +267,48 @@ inline void writePoint(ofstream &file, const Point3f &p) {
     file << p.z << ",";
 }
 
+template <typename T>
+void appendVector(vector<T> &vec, const vector<T> &appendVec) {
+    vec.insert(vec.end(), appendVec.begin(), appendVec.end());
+}
+
 void PangolinDSOViewer::saveFeatures() {
     ofstream file(origCloudPath + "_result");
     file << fixed << setprecision(4);
+    bool withClasses = !cloud->classes.empty();
+    vector<string> rows = {"id", "Easting", "Northing", "Height", "Reflectance"};
+    if (withClasses) {
+        rows.push_back("Class");
+    }
+    
+    appendVector(rows, {
+        "GroundHeight", "NearestDist_0", "NearestDist_1", "NearestDist_2", "NearestCount", "NearestSameRefCount",
+        
+        "PlaneNormal.X", "PlaneNormal.Y", "PlaneNormal.Z",
+        "PlaneCurvature",
+        
+        "SMeanOffset.X", "SMeanOffset.Y", "SMeanOffset.Z",
+        "SPCA_Mag.X", "SPCA_Mag.Y", "SPCA_Mag.Z",
+        "SPCA_Vec0.X", "SPCA_Vec0.Y", "SPCA_Vec0.Z",
+        "SPCA_Vec1.X", "SPCA_Vec1.Y", "SPCA_Vec1.Z",
+        "SPCA_Vec2.X", "SPCA_Vec2.Y", "SPCA_Vec2.Z",
+        
+        "MeanOffset.X", "MeanOffset.Y", "MeanOffset.Z",
+        "PCA_Mag.X", "PCA_Mag.Y", "PCA_Mag.Z",
+        "PCA_Vec0.X", "PCA_Vec0.Y", "PCA_Vec0.Z",
+        "PCA_Vec1.X", "PCA_Vec1.Y", "PCA_Vec1.Z",
+        "PCA_Vec2.X", "PCA_Vec2.Y", "PCA_Vec2.Z",
+        
+        "PCA_Ref_Mag.X", "PCA_Ref_Mag.Y", "PCA_Ref_Mag.Z",
+        "PCA_Ref_Vec0.X", "PCA_Ref_Vec0.Y", "PCA_Ref_Vec0.Z",
+        "PCA_Ref_Vec1.X", "PCA_Ref_Vec1.Y", "PCA_Ref_Vec1.Z",
+        "PCA_Ref_Vec2.X", "PCA_Ref_Vec2.Y", "PCA_Ref_Vec2.Z"
+    });
+    for (string s : rows) {
+        file << s << ",";
+    }
+    file << endl;
+    
     for (size_t i = 0; i < cloud->size(); i++) {
         if (i % 10000 == 0) cout << "Write " << i << " / " << cloud->size() << endl;
         file << cloud->ids[i] << ",";
@@ -264,19 +317,34 @@ void PangolinDSOViewer::saveFeatures() {
         file << cloud->points[i].y + cloud->offset.y << ",";
         file << cloud->points[i].z + cloud->offset.z << ",";
         file << cloud->reflectance[i] << ",";
-        file << cloud->classes[i] << ",";
+        if (withClasses) {
+            file << cloud->classes[i] << ",";
+        }
 //        file << fixed << setprecision(4);
         
         const auto &f = cloudFeatures[i];
         file << f.groundHeight << ",";
-        file << f.nearestPointDist << ",";
+        file << f.nearestPointDist[0] << ",";
+        file << f.nearestPointDist[1] << ",";
+        file << f.nearestPointDist[2] << ",";
         file << f.nearestCount << ",";
         file << f.nearestCountSameRef << ",";
+        
+        writePoint(file, f.planeNormal);
+        file << f.planeCurvature;
+        
+        writePoint(file, f.meanOffsetSmall);
+        writePoint(file, f.valAndDirSmall[0]);
+        writePoint(file, f.valAndDirSmall[1]);
+        writePoint(file, f.valAndDirSmall[2]);
+        writePoint(file, f.valAndDirSmall[3]);
+        
         writePoint(file, f.meanOffset);
         writePoint(file, f.valAndDir[0]);
         writePoint(file, f.valAndDir[1]);
         writePoint(file, f.valAndDir[2]);
         writePoint(file, f.valAndDir[3]);
+        
         writePoint(file, f.valAndDirSameRef[0]);
         writePoint(file, f.valAndDirSameRef[1]);
         writePoint(file, f.valAndDirSameRef[2]);
@@ -284,4 +352,45 @@ void PangolinDSOViewer::saveFeatures() {
         file << endl;
     }
     file.close();
+}
+
+
+void PangolinDSOViewer::loadPredictions() {
+    processedTypes = readClassesCSV(predictionsPath);
+    cout << processedTypes.size() << " <> " << cloud->points.size() << endl;
+    updatePredictions();
+}
+
+float PangolinDSOViewer::calculateAcuracy() {
+    if (cloud->classes.size() != processedTypes.size()) {
+        return 0;
+    }
+    
+    const auto &realTypes = cloud->classes;
+    long correctCount = 0;
+    for (int i = 0; i < processedTypes.size(); i++) {
+        if (realTypes[i] == processedTypes[i]) correctCount++;
+    }
+    auto confusion = calculateConfusion(realTypes, processedTypes);
+    printConfusion(confusion);
+    
+    return correctCount / (double)processedTypes.size();
+}
+
+void PangolinDSOViewer::updatePredictions() {
+    generateKeyframes(cloud, kfPointsProcessed, 1, &processedTypes);
+    settings_displayProcessed = true;
+    lastAcc = calculateAcuracy();
+    cout << "Accuracy: " << fixed << setprecision(6) << lastAcc << endl;
+    
+    vector<Point3f> errorPoints;
+    for (size_t i = 0; i < processedTypes.size(); i++) {
+        if (processedTypes[i] == cloud->classes[i]) continue;
+        errorPoints.push_back(cloud->points[i]);
+    }
+    if (errorPointsKf == nullptr) {
+        errorPointsKf = new KeyFrameDisplay();
+    }
+    errorPointsKf->cloud = move(errorPoints);
+    errorPointsKf->pushDataToBuffers();
 }

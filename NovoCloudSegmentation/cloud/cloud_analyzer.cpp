@@ -13,6 +13,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/pca.h>
 #include <unordered_set>
+#include "plane.hpp"
 
 using namespace std;
 using namespace cv;
@@ -91,20 +92,40 @@ void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, floa
     const vector<float> &reflectance = cloud->reflectance;
     vector<float> tempNoiseSqrDists, tempSqrDists;
     vector<int> tempNoiseIdxs, tempIdxs, tempIdxs2;
+    const bool smallData = true;
+    const float smallRadius = radius / 3.0f;
     for (size_t i = 0; i < size ; i++) {
         if (i%10000 == 0) cout << i << " / " << size << endl;
         
         const auto &p = cloud->points[i];
         auto &v = outInfo[i];
-        kdtree.nearestKSearch((int)i, 2, tempNoiseIdxs, tempNoiseSqrDists);
+        kdtree.nearestKSearch((int)i, 5, tempNoiseIdxs, tempNoiseSqrDists);
         
+        // small radius
+        if (smallData) {
+            kdtree.radiusSearch((int)i, smallRadius, tempIdxs, tempSqrDists);
+            pca.setIndices(make_shared<vector<int>>(tempIdxs));
+        }
+        if (smallData && tempIdxs.size() > 3) {
+            v.valAndDirSmall = getPCAFeature(pca);
+            v.meanOffsetSmall = eigen4ToCv(pca.getMean()) - p;
+        } else {
+            v.valAndDirSmall = {Point3f(), Point3f(), Point3f(), Point3f()};
+            v.meanOffsetSmall = {};
+        }
         
+        // расчитываем плоскость для маленького радиуса
+        Plane plane = Plane::findPlaneNE(*pclCloud, tempIdxs);
+        v.planeNormal = plane.getPointNormalDist(p);
+        v.planeCurvature = plane.curvature;
         
         kdtree.radiusSearch((int)i, radius, tempIdxs, tempSqrDists);
         pca.setIndices(make_shared<vector<int>>(tempIdxs));
         
         v.groundHeight = p.z - medianGround;
-        v.nearestPointDist = sqrt(tempNoiseSqrDists[1]);
+        v.nearestPointDist[0] = sqrt(tempNoiseSqrDists[1]);
+        v.nearestPointDist[1] = sqrt(tempNoiseSqrDists[2]);
+        v.nearestPointDist[2] = sqrt(tempNoiseSqrDists[3]);
         v.nearestCount = (int)tempIdxs.size();
         
         if (tempIdxs.size() > 3) {
@@ -187,6 +208,29 @@ void processCloud(PointCloudRef cloud, std::vector<Type> &outTypes) {
                 outTypes[i] = TypeContactNetwork;
             }
             continue;
+        }
+    }
+}
+
+void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
+    PclCloud::Ptr pclCloud = makeCloud(cloud->points);
+    PclTree kdtree;
+    kdtree.setInputCloud(pclCloud);
+    PclPCA pca;
+    pca.setInputCloud(pclCloud);
+    
+    const size_t size = cloud->points.size();
+    
+    vector<float> tempNoiseSqrDists, tempSqrDists;
+    vector<int> tempNoiseIdxs, tempIdxs;
+    for (size_t i = 0; i < size ; i++) {
+        if (i%10000 == 0) cout << i << " / " << size << endl;
+//        if (i%processEveryN != 0) continue;
+//        if (cloud->classes[i] != TypeNoise) continue;
+        kdtree.nearestKSearch((int)i, 3, tempNoiseIdxs, tempNoiseSqrDists);
+        if (tempNoiseSqrDists[1] > 0.1) {
+            // смотрим что ближайшие точки лежат далеко
+            inOutTypes[i] = TypeNoise;
         }
     }
 }

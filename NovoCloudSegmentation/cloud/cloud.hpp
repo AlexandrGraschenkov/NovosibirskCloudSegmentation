@@ -12,6 +12,8 @@
 #include <opencv2/core.hpp>
 #include <memory>
 
+#define TYPE_COUNT 6
+
 typedef enum : int {
     TypeUnknown = -1,
     TypeGround = 0,
@@ -37,6 +39,7 @@ struct PointCloud {
 using PointCloudRef = std::shared_ptr<PointCloud>;
 
 PointCloudRef readCSV(const std::string &fullPath, bool useCache = true);
+std::vector<Type> readClassesCSV(const std::string &fullPath);
 cv::Vec3f colorForType(Type t);
 
 #endif /* cloud_hpp */

@@ -16,15 +16,23 @@ void processCloud(PointCloudRef cloud, std::vector<Type> &outTypes);
 
 struct PointInfo {
     float groundHeight;
-    float nearestPointDist;
+    float nearestPointDist[3];
     int nearestCount;
     int nearestCountSameRef;
     cv::Point3f meanOffset;
+    cv::Point3f meanOffsetSmall;
     std::array<cv::Point3f, 4> valAndDir;
     std::array<cv::Point3f, 4> valAndDirSameRef;
+    std::array<cv::Point3f, 4> valAndDirSmall;
+    
+    cv::Point3f planeNormal;
+    float planeCurvature;
 };
 
 void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, float radius = 0.6);
+
+
+void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes);
 } // namespace pcl_algo
 
 #endif /* cloud_analyzer_hpp */

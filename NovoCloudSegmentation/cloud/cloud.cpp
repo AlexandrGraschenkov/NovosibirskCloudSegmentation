@@ -144,6 +144,18 @@ PointCloudRef readCSV(const std::string &fullPath, bool useCache) {
     return make_shared<PointCloud>(result);
 }
 
+std::vector<Type> readClassesCSV(const std::string &fullPath) {
+    ifstream file(fullPath);
+    string tempStr = "";
+    int typeInt = 0;
+    file >> tempStr;
+    vector<Type> result;
+    while (file >> typeInt) {
+        result.push_back((Type)typeInt);
+    }
+    return result;
+}
+
 cv::Vec3f colorForType(Type t) {
     switch (t) {
         case TypeUnknown:

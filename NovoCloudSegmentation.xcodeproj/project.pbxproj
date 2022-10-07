@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FACA91F628EF4EAD0020DA36 /* confusion_matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FACA91F428EF4EAD0020DA36 /* confusion_matrix.cpp */; };
+		FACA91F928EF6F420020DA36 /* plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FACA91F728EF6F420020DA36 /* plane.cpp */; };
 		FAEF33B128E8B0E10063C26A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B028E8B0E10063C26A /* main.cpp */; };
 		FAEF33C428E8B1570063C26A /* MatrixChnageHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B828E8B1570063C26A /* MatrixChnageHandler.cpp */; };
 		FAEF33C528E8B1570063C26A /* TrajectoryDrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF33B928E8B1570063C26A /* TrajectoryDrawer.cpp */; };
@@ -32,6 +34,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FACA91F428EF4EAD0020DA36 /* confusion_matrix.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = confusion_matrix.cpp; sourceTree = "<group>"; };
+		FACA91F528EF4EAD0020DA36 /* confusion_matrix.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = confusion_matrix.hpp; sourceTree = "<group>"; };
+		FACA91F728EF6F420020DA36 /* plane.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = plane.cpp; sourceTree = "<group>"; };
+		FACA91F828EF6F420020DA36 /* plane.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = plane.hpp; sourceTree = "<group>"; };
 		FAEF33AD28E8B0E10063C26A /* NovoCloudSegmentation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NovoCloudSegmentation; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAEF33B028E8B0E10063C26A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FAEF33B828E8B1570063C26A /* MatrixChnageHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MatrixChnageHandler.cpp; sourceTree = "<group>"; };
@@ -130,6 +136,8 @@
 				FAEF33CC28E8D7790063C26A /* cloud.hpp */,
 				FAEF33E828E99E1A0063C26A /* cloud_analyzer.cpp */,
 				FAEF33E928E99E1A0063C26A /* cloud_analyzer.hpp */,
+				FACA91F728EF6F420020DA36 /* plane.cpp */,
+				FACA91F828EF6F420020DA36 /* plane.hpp */,
 			);
 			path = cloud;
 			sourceTree = "<group>";
@@ -139,6 +147,8 @@
 			children = (
 				FAEF33D028E977070063C26A /* sophus */,
 				FAEF33D928E977070063C26A /* json.hpp */,
+				FACA91F428EF4EAD0020DA36 /* confusion_matrix.cpp */,
+				FACA91F528EF4EAD0020DA36 /* confusion_matrix.hpp */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -225,9 +235,11 @@
 			files = (
 				FAEF33C928E8B1570063C26A /* KeyFrameDisplay.cpp in Sources */,
 				FAEF33EA28E99E1A0063C26A /* cloud_analyzer.cpp in Sources */,
+				FACA91F928EF6F420020DA36 /* plane.cpp in Sources */,
 				FAEF33CD28E8D7790063C26A /* cloud.cpp in Sources */,
 				FAEF33C828E8B1570063C26A /* SimpleMatrix.cpp in Sources */,
 				FAEF33B128E8B0E10063C26A /* main.cpp in Sources */,
+				FACA91F628EF4EAD0020DA36 /* confusion_matrix.cpp in Sources */,
 				FAEF33C428E8B1570063C26A /* MatrixChnageHandler.cpp in Sources */,
 				FAEF33C728E8B1570063C26A /* PangolinDSOViewer.cpp in Sources */,
 				FAEF33E228E977070063C26A /* cloud_to_kf.cpp in Sources */,
