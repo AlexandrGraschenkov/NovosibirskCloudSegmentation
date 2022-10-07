@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]) {
     
 //    string dataPath = "/Users/alex/Desktop/Новосибирск/test_dataset_test.csv";
     string dataPath = "/Users/alex/Desktop/Новосибирск/train_dataset_train.csv";
-    string predPath = "/Users/alex/Desktop/Новосибирск/pred_classes.csv";
+    string predPath = "/Users/alex/Desktop/Новосибирск/pred_classes_3.csv";
     PointCloudRef cloud = readCSV(dataPath);
     cout << cloud->points.size() << endl;
     

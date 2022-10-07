@@ -46,19 +46,40 @@ void printConfusion(const std::vector<std::vector<int>> &confusion) {
     long total = 0;
     for (const auto &vec : confusion) for (int v : vec) total += v;
     
+    // col description
     for (auto t : types) {
         cout << right << setw(8) << setfill(' ') << t;
     }
     cout << "|" << right << setw(9) << setfill(' ') << "err_perc";
     cout << endl;
+    vector<long> columnSum(confusion.size());
     for (int r = 0; r < confusion.size(); r++) {
+        // row description
         cout << right << setw(8) << setfill(' ') << types[r];
+        
+        // table
         long sum = 0;
         for (int c = 0; c < confusion[r].size(); c++) {
-            if (r != c) sum += confusion[r][c];
+            if (r != c) {
+                sum += confusion[r][c];
+                columnSum[c] += confusion[r][c];
+            }
             cout << right << setw(8) << setfill(' ') << confusion[r][c];
         }
+        
+        // err percent col
         cout << "|" << right << setw(8) << setfill(' ') << fixed << setprecision(2) << (10000 * sum / (double)total) / 100.0 << "%";
         cout << endl;
     }
+    for (int i = 0; i < confusion.size()+2; i++) {
+        cout << right << setw(8) << setfill('-') << "-";
+    }
+    cout << endl;
+    
+    // err percent row
+    cout << right << setw(8) << setfill(' ') << "err_perc";
+    for (long sum : columnSum) {
+        cout << "|" << right << setw(6) << setfill(' ') << fixed << setprecision(2) << (10000 * sum / (double)total) / 100.0 << "%";
+    }
+    cout << endl;
 }

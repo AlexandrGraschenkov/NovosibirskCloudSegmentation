@@ -93,5 +93,9 @@ private:
     void loadPredictions();
     float calculateAcuracy();
     void updatePredictions();
+    
+    // fix cloud
+    
+    void fixNoise();
 };
 

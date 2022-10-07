@@ -223,15 +223,18 @@ void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
     
     vector<float> tempNoiseSqrDists, tempSqrDists;
     vector<int> tempNoiseIdxs, tempIdxs;
+    int fixedCount = 0;
     for (size_t i = 0; i < size ; i++) {
-        if (i%10000 == 0) cout << i << " / " << size << endl;
+        if (i%1000000 == 0) cout << i << " / " << size << endl;
 //        if (i%processEveryN != 0) continue;
 //        if (cloud->classes[i] != TypeNoise) continue;
-        kdtree.nearestKSearch((int)i, 3, tempNoiseIdxs, tempNoiseSqrDists);
-        if (tempNoiseSqrDists[1] > 0.1) {
+        kdtree.nearestKSearch((int)i, 5, tempNoiseIdxs, tempNoiseSqrDists);
+        if (tempNoiseSqrDists[3] > 0.7) {
             // смотрим что ближайшие точки лежат далеко
             inOutTypes[i] = TypeNoise;
+            fixedCount++;
         }
     }
+    cout << "Noise fixed count " << fixedCount << endl;
 }
 } // namespace pcl_algo

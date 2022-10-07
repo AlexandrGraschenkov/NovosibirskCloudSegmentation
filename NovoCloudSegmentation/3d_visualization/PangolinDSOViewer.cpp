@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <iostream>
 #include "../utils/confusion_matrix.hpp"
+#include "../cloud/cloud_analyzer.hpp"
 
 
 using namespace std;
@@ -178,6 +179,7 @@ void PangolinDSOViewer::run()
     pangolin::Var<float> settings_accuracy("ui.Accuracy", 0, false);
     
     pangolin::Var<float> settings_errorPointSize("ui.Error Point size", 3, 0.1, 10, false);
+    pangolin::Var<bool> settings_fixNoiseButt("ui.Fix noise",false,false);
     
 
 
@@ -213,6 +215,10 @@ void PangolinDSOViewer::run()
         if (pangolin::Pushed(settings_loadPredictions)) {
             loadPredictions();
             settings_showProcessed = settings_displayProcessed;
+            settings_accuracy = lastAcc;
+        }
+        if (pangolin::Pushed(settings_fixNoiseButt)) {
+            fixNoise();
             settings_accuracy = lastAcc;
         }
         if (pangolin::Pushed(settings_generateFeatures)) {
@@ -261,10 +267,11 @@ void PangolinDSOViewer::generateFeatures() {
     pcl_algo::generateFeatures(cloud, cloudFeatures);
 }
 
-inline void writePoint(ofstream &file, const Point3f &p) {
+inline void writePoint(ofstream &file, const Point3f &p, bool endComma = true) {
     file << p.x << ",";
     file << p.y << ",";
-    file << p.z << ",";
+    file << p.z;
+    if (endComma) file << ",";
 }
 
 template <typename T>
@@ -285,27 +292,28 @@ void PangolinDSOViewer::saveFeatures() {
         "GroundHeight", "NearestDist_0", "NearestDist_1", "NearestDist_2", "NearestCount", "NearestSameRefCount",
         
         "PlaneNormal.X", "PlaneNormal.Y", "PlaneNormal.Z",
-        "PlaneCurvature",
+        "PlaneCurvature", // 16
         
         "SMeanOffset.X", "SMeanOffset.Y", "SMeanOffset.Z",
         "SPCA_Mag.X", "SPCA_Mag.Y", "SPCA_Mag.Z",
         "SPCA_Vec0.X", "SPCA_Vec0.Y", "SPCA_Vec0.Z",
         "SPCA_Vec1.X", "SPCA_Vec1.Y", "SPCA_Vec1.Z",
-        "SPCA_Vec2.X", "SPCA_Vec2.Y", "SPCA_Vec2.Z",
+        "SPCA_Vec2.X", "SPCA_Vec2.Y", "SPCA_Vec2.Z", // 31
         
         "MeanOffset.X", "MeanOffset.Y", "MeanOffset.Z",
         "PCA_Mag.X", "PCA_Mag.Y", "PCA_Mag.Z",
         "PCA_Vec0.X", "PCA_Vec0.Y", "PCA_Vec0.Z",
         "PCA_Vec1.X", "PCA_Vec1.Y", "PCA_Vec1.Z",
-        "PCA_Vec2.X", "PCA_Vec2.Y", "PCA_Vec2.Z",
+        "PCA_Vec2.X", "PCA_Vec2.Y", "PCA_Vec2.Z", // 46
         
         "PCA_Ref_Mag.X", "PCA_Ref_Mag.Y", "PCA_Ref_Mag.Z",
         "PCA_Ref_Vec0.X", "PCA_Ref_Vec0.Y", "PCA_Ref_Vec0.Z",
         "PCA_Ref_Vec1.X", "PCA_Ref_Vec1.Y", "PCA_Ref_Vec1.Z",
-        "PCA_Ref_Vec2.X", "PCA_Ref_Vec2.Y", "PCA_Ref_Vec2.Z"
+        "PCA_Ref_Vec2.X", "PCA_Ref_Vec2.Y", "PCA_Ref_Vec2.Z" // 58
     });
-    for (string s : rows) {
-        file << s << ",";
+    for (int i = 0; i < rows.size(); i++) {
+        file << rows[i];
+        if (i < rows.size()-1) file << ",";
     }
     file << endl;
     
@@ -331,24 +339,24 @@ void PangolinDSOViewer::saveFeatures() {
         file << f.nearestCountSameRef << ",";
         
         writePoint(file, f.planeNormal);
-        file << f.planeCurvature;
+        file << f.planeCurvature << ","; // 16
         
         writePoint(file, f.meanOffsetSmall);
         writePoint(file, f.valAndDirSmall[0]);
         writePoint(file, f.valAndDirSmall[1]);
         writePoint(file, f.valAndDirSmall[2]);
-        writePoint(file, f.valAndDirSmall[3]);
+        writePoint(file, f.valAndDirSmall[3]); // 31
         
         writePoint(file, f.meanOffset);
         writePoint(file, f.valAndDir[0]);
         writePoint(file, f.valAndDir[1]);
         writePoint(file, f.valAndDir[2]);
-        writePoint(file, f.valAndDir[3]);
+        writePoint(file, f.valAndDir[3]); // 46
         
         writePoint(file, f.valAndDirSameRef[0]);
         writePoint(file, f.valAndDirSameRef[1]);
         writePoint(file, f.valAndDirSameRef[2]);
-        writePoint(file, f.valAndDirSameRef[3]);
+        writePoint(file, f.valAndDirSameRef[3], false); // 58
         file << endl;
     }
     file.close();
@@ -393,4 +401,9 @@ void PangolinDSOViewer::updatePredictions() {
     }
     errorPointsKf->cloud = move(errorPoints);
     errorPointsKf->pushDataToBuffers();
+}
+
+void PangolinDSOViewer::fixNoise() {
+    pcl_algo::fixNoise(cloud, processedTypes);
+    updatePredictions();
 }
