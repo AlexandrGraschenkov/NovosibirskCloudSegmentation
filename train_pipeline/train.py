@@ -46,7 +46,9 @@ def save_predicts(loader, model):
 if __name__ == "__main__":
     args = parse_args()
     config = Config.fromfile(args.config_path)
-    train_ds = PointsCloudDataset("/home/anvar/Novosib/temp_train_ds.csv", transform=True)
+    paths = config.paths
+    extra_features = paths.train_extra_features if hasattr(paths, 'train_extra_features') else None
+    train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=True, verbose=True)
     train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
 
     input_size = len(train_ds[0][0])
