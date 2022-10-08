@@ -172,7 +172,9 @@ void PangolinDSOViewer::run()
     pangolin::Var<bool> settings_processCloud("ui.Process cloud",false,false);
     pangolin::Var<bool> settings_loadPredictions("ui.Load predictions",false,false);
     pangolin::Var<bool> settings_generateFeatures("ui.Generate features",false,false);
+    pangolin::Var<bool> settings_generateFeatures2("ui.Generate features 2",false,false);
     pangolin::Var<bool> settings_saveFeatures("ui.Save features",false,false);
+    pangolin::Var<bool> settings_saveFeatures_2("ui.Save features 2",false,false);
     
     pangolin::Var<bool> settings_showSegmentation("ui.Segmentation",false,true);
     pangolin::Var<bool> settings_showProcessed("ui.Processed",false,true);
@@ -224,8 +226,14 @@ void PangolinDSOViewer::run()
         if (pangolin::Pushed(settings_generateFeatures)) {
             generateFeatures();
         }
+        if (pangolin::Pushed(settings_generateFeatures2)) {
+            generateFeatures2();
+        }
         if (pangolin::Pushed(settings_saveFeatures)) {
             saveFeatures();
+        }
+        if (pangolin::Pushed(settings_saveFeatures_2)) {
+            saveFeatures2();
         }
         
         if (changes) {
@@ -265,6 +273,10 @@ void PangolinDSOViewer::runProcessCloud() {
 
 void PangolinDSOViewer::generateFeatures() {
     pcl_algo::generateFeatures(cloud, cloudFeatures);
+}
+
+void PangolinDSOViewer::generateFeatures2() {
+    pcl_algo::generateFeatures2(cloud, cloudFeatures2);
 }
 
 inline void writePoint(ofstream &file, const Point3f &p, bool endComma = true) {
@@ -357,6 +369,22 @@ void PangolinDSOViewer::saveFeatures() {
         writePoint(file, f.valAndDirSameRef[1]);
         writePoint(file, f.valAndDirSameRef[2]);
         writePoint(file, f.valAndDirSameRef[3], false); // 58
+        file << endl;
+    }
+    file.close();
+}
+
+void PangolinDSOViewer::saveFeatures2() {
+    ofstream file(origCloudPath + "_result_2");
+    file << fixed << setprecision(5);
+    const int size = pcl::FPFHSignature33::descriptorSize();
+    for (size_t i = 0; i < cloudFeatures2.size(); i++) {
+        const auto &f = cloudFeatures2[i];
+        if (i % 10000 == 0) cout << "Write " << i << " / " << cloud->size() << endl;
+        for (int ii = 0; ii < size; ii++) {
+            if (ii > 0) file << ",";
+            file << f.histogram[ii];
+        }
         file << endl;
     }
     file.close();

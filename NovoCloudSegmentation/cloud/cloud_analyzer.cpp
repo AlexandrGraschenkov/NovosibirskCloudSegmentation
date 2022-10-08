@@ -14,6 +14,8 @@
 #include <pcl/common/pca.h>
 #include <unordered_set>
 #include "plane.hpp"
+#include <chrono>
+#include <pcl/features/fpfh_omp.h>
 
 using namespace std;
 using namespace cv;
@@ -150,6 +152,69 @@ void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, floa
     }
 }
 
+
+void generateFeatures2(PointCloudRef cloud, std::vector<pcl::FPFHSignature33> &outFeatures, float radius) {
+    PclCloud::Ptr pclCloud = makeCloud(cloud->points);
+    
+    cout << "--- Features 2 ---" << endl;
+    cout << "1/3 Compute normals!" << endl;
+    auto t1 = std::chrono::steady_clock::now();
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+    ne.setInputCloud(pclCloud);
+    
+    // Create an empty kdtree representation, and pass it to the normal estimation object.
+    // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+    ne.setSearchMethod (tree);
+    
+    // Output datasets
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    
+    // Use all neighbors in a sphere of radius 3cm
+    ne.setRadiusSearch (radius/3);
+    
+    // Compute the features
+    ne.compute (*cloud_normals);
+    
+    int nanNormalsCount = 0;
+    for (int i = 0; i < cloud_normals->size(); i++) {
+      if (!pcl::isFinite<pcl::Normal>((*cloud_normals)[i])) {
+          (*cloud_normals)[i] = pcl::Normal();
+          nanNormalsCount++;
+//        PCL_WARN("normals[%d] is not finite\n", i);
+      }
+    }
+    cout << "Nan normals " << nanNormalsCount << endl;
+    
+    cout << "2/3 Compute features!" << endl;
+    auto t2 = std::chrono::steady_clock::now();
+    std::cout << "Time = " << std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " sec" << std::endl;
+    
+    pcl::FPFHEstimationOMP<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> pfh;
+    pfh.setInputCloud (pclCloud);
+    pfh.setInputNormals (cloud_normals);
+    pfh.setSearchMethod (tree);
+    
+    // Output datasets
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr pfhs(new pcl::PointCloud<pcl::FPFHSignature33> ());
+    
+    // Use all neighbors in a sphere of radius 5cm
+    // IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
+    pfh.setRadiusSearch (radius);
+    
+    // Compute the features
+    pfh.compute (*pfhs);
+    cout << "3/3 Transfer features!" << endl;
+    auto t3 = std::chrono::steady_clock::now();
+    std::cout << "Time = " << std::chrono::duration_cast<std::chrono::seconds>(t3 - t2).count() << " sec" << std::endl;
+    
+    outFeatures = vector<pcl::FPFHSignature33>(pfhs->begin(), pfhs->end());
+    
+    cout << "--- Done ---" << endl;
+    auto t4 = std::chrono::steady_clock::now();
+    std::cout << "Time = " << std::chrono::duration_cast<std::chrono::seconds>(t4 - t3).count() << " sec" << std::endl;
+}
+
 void processCloud(PointCloudRef cloud, std::vector<Type> &outTypes) {
     PclCloud::Ptr pclCloud = makeCloud(cloud->points);
     PclTree kdtree;
@@ -237,4 +302,5 @@ void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
     }
     cout << "Noise fixed count " << fixedCount << endl;
 }
+
 } // namespace pcl_algo

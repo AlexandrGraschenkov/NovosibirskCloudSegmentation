@@ -59,6 +59,7 @@ public:
 private:
     PointCloudRef cloud;
     std::vector<pcl_algo::PointInfo> cloudFeatures;
+    std::vector<pcl::FPFHSignature33> cloudFeatures2;
     std::unordered_map<Type, KeyFrameDisplay *> kfPoints;
     std::unordered_map<Type, KeyFrameDisplay *> kfPointsProcessed;
     KeyFrameDisplay *errorPointsKf = nullptr;
@@ -89,7 +90,9 @@ private:
     
     void runProcessCloud();
     void generateFeatures();
+    void generateFeatures2();
     void saveFeatures();
+    void saveFeatures2();
     void loadPredictions();
     float calculateAcuracy();
     void updatePredictions();

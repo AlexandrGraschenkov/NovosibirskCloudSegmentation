@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 #include "cloud.hpp"
+#include <pcl/features/pfh.h>
+#include <pcl/features/fpfh.h>
 
 namespace pcl_algo {
 void processCloud(PointCloudRef cloud, std::vector<Type> &outTypes);
@@ -30,6 +32,7 @@ struct PointInfo {
 };
 
 void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, float radius = 0.6);
+void generateFeatures2(PointCloudRef cloud, std::vector<pcl::FPFHSignature33> &outFeatures, float radius = 0.5);
 
 
 void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes);
