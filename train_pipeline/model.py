@@ -8,12 +8,12 @@ class NN(nn.Module):
         self.bn = nn.BatchNorm1d(input_size)
         self.fc1 = nn.Linear(input_size, hidden_dim // 2)
         self.fc2 = nn.Linear(hidden_dim // 2, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, hidden_dim // 2)
-        self.fc4 = nn.Linear(hidden_dim // 2, num_classes)
+        self.fc3 = nn.Linear(hidden_dim, num_classes) #hidden_dim // 2)
+        # self.fc4 = nn.Linear(hidden_dim // 2, num_classes)
 
     def forward(self, x):
         x = self.bn(x)
         x = F.elu(self.fc1(x))
         x = F.elu(self.fc2(x))
-        x = F.elu(self.fc3(x))
-        return F.softmax(self.fc4(x))
+        # x = F.elu(self.fc3(x))
+        return F.softmax(self.fc3(x))

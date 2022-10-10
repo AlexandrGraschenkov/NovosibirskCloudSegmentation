@@ -52,6 +52,7 @@ if __name__ == "__main__":
     extra_features = paths.train_extra_features if hasattr(paths, 'train_extra_features') else None
     train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=True, verbose=True)
     train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
+    test_loader = DataLoader(train_ds, batch_size=256, shuffle=False)
     train_count = len(train_ds)/train_loader.batch_size
 
     input_size = len(train_ds[0][0])
@@ -61,8 +62,8 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
     loss_fn = nn.CrossEntropyLoss()
 
-    for epoch in range(4):
-        probabilities, true = get_predictions(loader=train_loader, model=model, is_test=False, device=DEVICE)
+    for epoch in range(2):
+        probabilities, true = get_predictions(loader=test_loader, model=model, is_test=False, device=DEVICE)
         print(f"VALIDATION ROC: {metrics.roc_auc_score(true, probabilities)}")
         print("Recall score",
               recall_score(np.argmax(true, axis=1), np.argmax(probabilities, axis=1), average='micro',
@@ -81,4 +82,4 @@ if __name__ == "__main__":
         save_path = os.path.join(config.paths["save_nn_dir"], f"weights_{epoch}.pth")
         torch.save(model.state_dict(), save_path)
     
-    save_predicts(train_loader, model)
+    save_predicts(test_loader, model)
