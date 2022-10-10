@@ -1,5 +1,6 @@
 import math
 from torch.utils.data import Dataset, DataLoader
+import torch
 import pandas as pd
 import random
 import numpy as np
@@ -21,11 +22,16 @@ class PointsCloudDataset(Dataset):
         self.points_frame = self.points_frame.dropna()
 
         self.transform = transform
-        self.y = self.points_frame["Class"]
-        self.y = pd.get_dummies(self.y)
-        self.X = self.points_frame.drop(["Class", "id", "Easting", "Northing", "Height"], axis=1)
-        if verbose: print(f"X: {self.X.shape}; y: {self.y.shape}")
-
+        drop_cols = ["id", "Easting", "Northing", "Height"]
+        if 'Class' in self.points_frame.columns:
+            self.y = self.points_frame["Class"]
+            self.y = pd.get_dummies(self.y)
+            drop_cols.append("Class")
+        else:
+            self.y = None
+        self.X = self.points_frame.drop(drop_cols, axis=1)
+        y_shape = self.y.shape if self.y is not None else "-"
+        if verbose: print(f"X: {self.X.shape}; y: {y_shape}")
 
         self.idxs_to_rotate = []
         # выбираем все фичи без магнитуды
@@ -33,19 +39,32 @@ class PointsCloudDataset(Dataset):
             if "mag" not in col.lower() and ("X" in col or "Y" in col or "Z" in col):
                 self.idxs_to_rotate.append(idx)
 
+        # для быстрого доступа к памяти
+        if verbose: print(f"To CUDA")
+        self.X = torch.tensor(self.X.values.astype(np.float32)).to("cuda")
+        if self.y is not None:
+            self.y = torch.tensor(self.y.values.astype(np.float32)).to("cuda")
+        else:
+            self.def_y = torch.tensor(np.array([0, 0, 0, 0, 0, 0], dtype=float))
+        if verbose: print(f"Dataset Done!")
+
     def __len__(self):
-        return len(self.X)
+        return self.X.size(0)
 
     def __getitem__(self, idx):
-        features = self.X.iloc[idx]
-        targets = self.y.iloc[idx]
-        if self.transform and random.random() > 0.5:
-            # рандомим угол от -30 до 30 градусов
-            angleRadians = random.uniform(-math.pi / 6, math.pi / 6)
-            # вертим вектора на Z
-            features = self.rotate(features, angleRadians)
+        features = self.X[idx]
+        if self.y is None:
+            return (features, self.def_y)
+        else:
+            targets = self.y[idx]
+            return (features, targets)
+            
+        # if self.transform and random.random() > 0.5:
+        #     # рандомим угол от -30 до 30 градусов
+        #     angleRadians = random.uniform(-math.pi / 6, math.pi / 6)
+        #     # вертим вектора на Z
+        #     features = self.rotate(features, angleRadians)
 
-        return np.array(features), np.array(targets)
 
     def rotate(self, data: list, angleRadians: float) -> list:
         c = math.cos(angleRadians)

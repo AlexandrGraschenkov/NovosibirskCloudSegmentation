@@ -50,35 +50,16 @@ if __name__ == "__main__":
     config = Config.fromfile(args.config_path)
     paths = config.paths
     extra_features = paths.train_extra_features if hasattr(paths, 'train_extra_features') else None
-    train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=True, verbose=True)
-    train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
+    train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=False, verbose=True)
+    train_loader = DataLoader(train_ds, batch_size=256, shuffle=False)
     train_count = len(train_ds)/train_loader.batch_size
 
     input_size = len(train_ds[0][0])
     DEVICE = config.device
     model = NN(input_size=input_size, hidden_dim=config.nn["hidden_dims"]).to(DEVICE)
     model = model.float()
-    optimizer = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
-    loss_fn = nn.CrossEntropyLoss()
+    load_path = os.path.join(config.paths["save_nn_dir"], "weights_1.pth")
+    model.load_state_dict(torch.load(load_path))
 
-    for epoch in range(4):
-        probabilities, true = get_predictions(loader=train_loader, model=model, is_test=False, device=DEVICE)
-        print(f"VALIDATION ROC: {metrics.roc_auc_score(true, probabilities)}")
-        print("Recall score",
-              recall_score(np.argmax(true, axis=1), np.argmax(probabilities, axis=1), average='micro',
-                           zero_division=True))
-
-        for batch_idx, (data, targets) in tqdm(enumerate(train_loader),desc="Train", total=train_count):
-            data = data.to(DEVICE)
-            targets = torch.tensor(targets, dtype=torch.float).to(DEVICE)
-            scores = model(data.float())
-            loss = loss_fn(scores, targets)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-        # torch.save(model.state_dict(), config.paths["save_nn"])
-        save_path = os.path.join(config.paths["save_nn_dir"], f"weights_{epoch}.pth")
-        torch.save(model.state_dict(), save_path)
-    
+    # probabilities, true = get_predictions(loader=train_loader, model=model, is_test=True, device=DEVICE)
     save_predicts(train_loader, model)
