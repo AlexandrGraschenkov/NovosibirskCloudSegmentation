@@ -59,7 +59,8 @@ if __name__ == "__main__":
     model = NN(input_size=input_size, hidden_dim=config.nn["hidden_dims"]).to(DEVICE)
     model = model.float()
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
-    loss_fn = nn.CrossEntropyLoss()
+    class_weigths = torch.tensor(train_ds.class_weights).to(DEVICE)
+    loss_fn = nn.CrossEntropyLoss(weight=class_weigths, label_smoothing=0.001)
 
     for epoch in range(4):
         probabilities, true = get_predictions(loader=train_loader, model=model, is_test=False, device=DEVICE)

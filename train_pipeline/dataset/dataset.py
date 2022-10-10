@@ -4,7 +4,7 @@ import torch
 import pandas as pd
 import random
 import numpy as np
-
+from sklearn.utils import class_weight
 
 class PointsCloudDataset(Dataset):
     def __init__(self, csv_file, extra_features_csv_file=None, transform=None, verbose=False):
@@ -25,6 +25,7 @@ class PointsCloudDataset(Dataset):
         drop_cols = ["id", "Easting", "Northing", "Height"]
         if 'Class' in self.points_frame.columns:
             self.y = self.points_frame["Class"]
+            self.class_weights = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(self.y), y=self.y)
             self.y = pd.get_dummies(self.y)
             drop_cols.append("Class")
         else:
@@ -78,10 +79,11 @@ class PointsCloudDataset(Dataset):
 
 
 if __name__ == "__main__":
-    train="/home/inna/Documents/gra_alex/novo_hackathon/train_dataset_train.csv_result"
-    train_extra_features="/home/inna/Documents/gra_alex/novo_hackathon/train_dataset_train.csv_result_2"
-    train_ds = PointsCloudDataset(train, extra_features_csv_file=train_extra_features, transform=True, verbose=True)
-    print(train_ds[0])
-    print(train_ds[0][0].shape)
-    train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
+    train="/home/anvar/Novosib/temp_train_ds.csv"
+    # train_extra_features="/home/inna/Documents/gra_alex/novo_hackathon/train_dataset_train.csv_result_2"
+    train_ds = PointsCloudDataset(train, transform=True, verbose=True)
+    print(train_ds.class_weights)
+    # print(train_ds[0])
+    # print(train_ds[0][0].shape)
+    # train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
     # print(next(iter(train_loader)))
