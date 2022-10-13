@@ -17,9 +17,13 @@ int main(int argc, const char * argv[]) {
     // insert code here...
     std::cout << "Hello, World!\n";
     
-//    string dataPath = "/Users/alex/Desktop/Новосибирск/test_dataset_test.csv";
-    string dataPath = "/Users/alex/Desktop/Новосибирск/train_dataset_train.csv";
-    string predPath = "/Users/alex/Desktop/Новосибирск/pred_classes_3.csv";
+    string dataPath = "/Users/alex/Desktop/Новосибирск/test_dataset_test.csv";
+    string predPath = "/Users/alex/Downloads/test_preds_hd200_elu.csv";
+//    string predPath = "/Users/alex/Desktop/Новосибирск/test_pred_out/6fc_3bn/test_preds_24.csv";
+//    string predPath = "/Users/alex/Desktop/Новосибирск/test_preds.csv";
+//    string dataPath = "/Users/alex/Desktop/Новосибирск/train_dataset_train.csv";
+//    string predPath = "/Users/alex/Desktop/Новосибирск/preds.csv";
+//    string predPath = "/Users/alex/Desktop/Новосибирск/pred_classes.csv";
     PointCloudRef cloud = readCSV(dataPath);
     cout << cloud->points.size() << endl;
     

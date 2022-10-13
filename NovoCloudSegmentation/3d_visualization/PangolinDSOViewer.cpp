@@ -183,6 +183,8 @@ void PangolinDSOViewer::run()
     pangolin::Var<float> settings_errorPointSize("ui.Error Point size", 3, 0.1, 10, false);
     pangolin::Var<bool> settings_fixNoiseButt("ui.Fix noise",false,false);
     
+    pangolin::Var<bool> settings_rotateGenerateFeatures("ui.Rotate Generate Features",false,false);
+    
 
 
 //    int count = 0;
@@ -234,6 +236,9 @@ void PangolinDSOViewer::run()
         }
         if (pangolin::Pushed(settings_saveFeatures_2)) {
             saveFeatures2();
+        }
+        if (pangolin::Pushed(settings_rotateGenerateFeatures)) {
+            rotateGenerateAndSaveFeatures();
         }
         
         if (changes) {
@@ -419,6 +424,11 @@ void PangolinDSOViewer::updatePredictions() {
     lastAcc = calculateAcuracy();
     cout << "Accuracy: " << fixed << setprecision(6) << lastAcc << endl;
     
+    if (cloud->classes.size() == 0) {
+        // GT нету, выходим из генерации ошибок
+        return;
+    }
+    
     vector<Point3f> errorPoints;
     for (size_t i = 0; i < processedTypes.size(); i++) {
         if (processedTypes[i] == cloud->classes[i]) continue;
@@ -429,6 +439,30 @@ void PangolinDSOViewer::updatePredictions() {
     }
     errorPointsKf->cloud = move(errorPoints);
     errorPointsKf->pushDataToBuffers();
+}
+
+
+void PangolinDSOViewer::rotateGenerateAndSaveFeatures() {
+    auto origPoints = cloud->points;
+    auto origPath = origCloudPath;
+    for (int angle = 45; angle < 360; angle+=45) {
+        cout << "Processing " << angle << "º" << endl;
+        double c = cos(angle * M_PI / 180.0);
+        double s = sin(angle * M_PI / 180.0);
+        cv::Mat r = (Mat_<double>(3,3) << c, -s, 0, s, c, 0, 0, 0, 1);
+        cv::transform(origPoints, cloud->points, r);
+        
+        cout << "<< Features 1 >>" << endl;
+        generateFeatures();
+        cout << "<< Features 2 >>" << endl;
+        generateFeatures2();
+        cout << "<< Save features >>" << endl;
+        origCloudPath = origPath + "_" + to_string(angle);
+        saveFeatures();
+        saveFeatures2();
+    }
+    cloud->points = move(origPoints);
+    origCloudPath = origPath;
 }
 
 void PangolinDSOViewer::fixNoise() {

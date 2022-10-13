@@ -16,6 +16,8 @@
 #include "plane.hpp"
 #include <chrono>
 #include <pcl/features/fpfh_omp.h>
+#include <iomanip>
+#include <iostream>
 
 using namespace std;
 using namespace cv;
@@ -91,6 +93,8 @@ void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, floa
     outInfo.resize(size);
     float medianGround = getMedianGroundHeight(cloud);
     
+    float medianGroundGlobal = medianGround + cloud->offset.z;
+    cout << "Ground " << fixed << setprecision(5) << medianGroundGlobal << endl;
     const vector<float> &reflectance = cloud->reflectance;
     vector<float> tempNoiseSqrDists, tempSqrDists;
     vector<int> tempNoiseIdxs, tempIdxs, tempIdxs2;
@@ -120,6 +124,10 @@ void generateFeatures(PointCloudRef cloud, std::vector<PointInfo> &outInfo, floa
         Plane plane = Plane::findPlaneNE(*pclCloud, tempIdxs);
         v.planeNormal = plane.getPointNormalDist(p);
         v.planeCurvature = plane.curvature;
+        if (isnan(v.planeCurvature) || isnan(v.planeNormal.x)) {
+            v.planeCurvature = 0;
+            v.planeNormal = Point3f();
+        }
         
         kdtree.radiusSearch((int)i, radius, tempIdxs, tempSqrDists);
         pca.setIndices(make_shared<vector<int>>(tempIdxs));
@@ -301,6 +309,24 @@ void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
         }
     }
     cout << "Noise fixed count " << fixedCount << endl;
+}
+
+struct Support {
+    std::vector<int> indexes;
+    cv::Vec3f size;
+};
+
+//void find
+
+void fixSupports(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
+    PclCloud::Ptr pclCloud = makeCloud(cloud->points);
+    PclTree kdtree;
+    kdtree.setInputCloud(pclCloud);
+    PclPCA pca;
+    pca.setInputCloud(pclCloud);
+    
+    unordered_set<int> usedIdxs;
+//    for (int i = 0; i < )
 }
 
 } // namespace pcl_algo

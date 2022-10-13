@@ -97,6 +97,8 @@ private:
     float calculateAcuracy();
     void updatePredictions();
     
+    void rotateGenerateAndSaveFeatures();
+    
     // fix cloud
     
     void fixNoise();
