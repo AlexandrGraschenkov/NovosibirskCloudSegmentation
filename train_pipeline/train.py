@@ -8,11 +8,11 @@ from sklearn import metrics
 from utils import get_predictions
 from model import NN
 from dataset.dataset import PointsCloudDataset
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 import pandas as pd
 from tqdm import tqdm
 import os
-
+from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -49,27 +49,54 @@ if __name__ == "__main__":
     args = parse_args()
     config = Config.fromfile(args.config_path)
     paths = config.paths
-    extra_features = paths.train_extra_features if hasattr(paths, 'train_extra_features') else None
-    train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=True, verbose=True)
+    DEVICE = config.device
+
+
+    if os.path.isdir(args.config_path):
+        # Если путь - папка, то берем все датасеты и конкатим их в один большой
+        ds_paths = sorted(
+            [os.path.join(paths.train, i) for i in os.listdir(paths.train) if i.split("_")[-1] == "result"])
+        ds_extra_paths = sorted(
+            [os.path.join(paths.train, i) for i in os.listdir(paths.train) if i.split("_")[-1] == "2"])
+
+        datasets = []
+        for ds, extra in zip(ds_paths, ds_extra_paths):
+            datasets.append(PointsCloudDataset(ds, extra_features_csv_file=extra, transform=True, verbose=True))
+        train_ds = ConcatDataset(datasets)
+        class_weigths = torch.tensor(datasets[0].class_weights).to(DEVICE)
+    else:
+        # Иначе берем один, который указан в конфиге
+        extra_features = paths.train_extra_features if hasattr(paths, 'train_extra_features') else None
+        train_ds = PointsCloudDataset(paths.train, extra_features_csv_file=extra_features, transform=False, verbose=True)
+        class_weigths = torch.tensor(train_ds.class_weights).to(DEVICE)
+
     train_loader = DataLoader(train_ds, batch_size=64, shuffle=True)
     train_count = len(train_ds)/train_loader.batch_size
 
     input_size = len(train_ds[0][0])
-    DEVICE = config.device
+
     model = NN(input_size=input_size, hidden_dim=config.nn["hidden_dims"]).to(DEVICE)
     model = model.float()
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-3, weight_decay=1e-4)
-    class_weigths = torch.tensor(train_ds.class_weights).to(DEVICE)
+    scheduler = CosineAnnealingWarmupRestarts(optimizer,
+                                              first_cycle_steps=10,
+                                              cycle_mult=1.0,
+                                              max_lr=0.001,
+                                              min_lr=0.000001,
+                                              warmup_steps=1,
+                                              gamma=1.0)
+
+
     loss_fn = nn.CrossEntropyLoss(weight=class_weigths, label_smoothing=0.001)
 
-    for epoch in range(4):
+    for epoch in range(10):
         probabilities, true = get_predictions(loader=train_loader, model=model, is_test=False, device=DEVICE)
         print(f"VALIDATION ROC: {metrics.roc_auc_score(true, probabilities)}")
         print("Recall score",
               recall_score(np.argmax(true, axis=1), np.argmax(probabilities, axis=1), average='micro',
                            zero_division=True))
 
-        for batch_idx, (data, targets) in tqdm(enumerate(train_loader),desc="Train", total=train_count):
+        for batch_idx, (data, targets) in tqdm(enumerate(train_loader), desc="Train", total=train_count):
             data = data.to(DEVICE)
             targets = torch.tensor(targets, dtype=torch.float).to(DEVICE)
             scores = model(data.float())
@@ -79,7 +106,7 @@ if __name__ == "__main__":
             optimizer.step()
 
         # torch.save(model.state_dict(), config.paths["save_nn"])
-        save_path = os.path.join(config.paths["save_nn_dir"], f"weights_{epoch}.pth")
+        save_path = os.path.join(config.paths["save_nn_dir"], f"weights_elu_XY_no_tr_{epoch}.pth")
         torch.save(model.state_dict(), save_path)
     
     save_predicts(train_loader, model)

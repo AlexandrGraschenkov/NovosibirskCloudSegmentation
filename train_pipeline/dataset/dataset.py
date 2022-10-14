@@ -23,6 +23,7 @@ class PointsCloudDataset(Dataset):
 
         self.transform = transform
         drop_cols = ["id", "Easting", "Northing", "Height"]
+        # drop_cols = ["id", "Height"]
         if 'Class' in self.points_frame.columns:
             self.y = self.points_frame["Class"]
             self.class_weights = class_weight.compute_class_weight(class_weight='balanced', classes=np.unique(self.y), y=self.y)
@@ -31,6 +32,9 @@ class PointsCloudDataset(Dataset):
         else:
             self.y = None
         self.X = self.points_frame.drop(drop_cols, axis=1)
+        # self.X["Easting"] = self.X["Easting"].subtract(self.X["Easting"].median())
+        # self.X["Northing"] = self.X["Northing"].subtract(self.X["Northing"].median())
+
         y_shape = self.y.shape if self.y is not None else "-"
         if verbose: print(f"X: {self.X.shape}; y: {y_shape}")
 
