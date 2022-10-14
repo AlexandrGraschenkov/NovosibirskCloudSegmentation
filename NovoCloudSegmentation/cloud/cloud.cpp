@@ -134,6 +134,7 @@ PointCloudRef readCSV(const std::string &fullPath, bool useCache) {
 //        if (p.x - p.y < 70) continue; //
 //        if ( - p.x - p.y > 10) continue;
 //        if (p.x + p.y > 10) continue;
+//        if (p.x + p.y > -10) continue;
         result.points.push_back(p);
         result.reflectance.push_back(stof(values[4]));
         if (withClass) {
@@ -142,6 +143,25 @@ PointCloudRef readCSV(const std::string &fullPath, bool useCache) {
     }
     writeCache(fullPath, result);
     return make_shared<PointCloud>(result);
+}
+void PointCloud::filterPoints() {
+    vector<Point3f> points2; points2.reserve(classes.size());
+    vector<int> ids2; ids2.reserve(classes.size());
+    vector<float> reflectance2; reflectance2.reserve(classes.size());
+    vector<Type> classes2; classes2.reserve(classes.size());
+    for (int i = 0; i < points.size(); i++) {
+        auto p = points[i];
+        if (p.x + p.y > -23) continue;
+        if (p.x + p.y < -37) continue;
+        points2.push_back(points[i]);
+        ids2.push_back(ids[i]);
+        reflectance2.push_back(reflectance[i]);
+        classes2.push_back(classes[i]);
+    }
+    classes = move(classes2);
+    points = move(points2);
+    ids = move(ids2);
+    reflectance = move(reflectance2);
 }
 
 std::vector<Type> readClassesCSV(const std::string &fullPath) {

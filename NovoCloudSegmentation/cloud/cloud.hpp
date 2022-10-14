@@ -33,6 +33,7 @@ struct PointCloud {
     cv::Point3d offset;
     
     size_t size() const { return points.size(); }
+    void filterPoints();
 };
 
 // не дай боже копирнуть эту структурку

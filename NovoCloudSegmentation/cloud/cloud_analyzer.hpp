@@ -36,6 +36,8 @@ void generateFeatures2(PointCloudRef cloud, std::vector<pcl::FPFHSignature33> &o
 
 
 void fixNoise(PointCloudRef cloud, std::vector<Type> &inOutTypes);
+void fixClasses(PointCloudRef cloud, std::vector<Type> &inOutTypes);
+void fixClasses2(PointCloudRef cloud, std::vector<Type> &inOutTypes);
 } // namespace pcl_algo
 
 #endif /* cloud_analyzer_hpp */

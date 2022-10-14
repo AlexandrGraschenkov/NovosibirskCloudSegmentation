@@ -106,7 +106,7 @@ void PangolinDSOViewer::drawAll(float ptSize) {
     }
     
     glLineWidth(10);
-    pangolin::glDrawAxis(2);
+    pangolin::glDrawAxis(20);
 }
 
 #pragma MARK -
@@ -149,7 +149,6 @@ void PangolinDSOViewer::run()
 {
 //    const int UI_WIDTH = 160;
     const int UI_WIDTH = 20* pangolin::default_font().MaxWidth();
-
     
     // 3D visualization
     pangolin::OpenGlRenderState Visualization3D_camera;
@@ -182,6 +181,7 @@ void PangolinDSOViewer::run()
     
     pangolin::Var<float> settings_errorPointSize("ui.Error Point size", 3, 0.1, 10, false);
     pangolin::Var<bool> settings_fixNoiseButt("ui.Fix noise",false,false);
+    pangolin::Var<bool> settings_fixClassesButt("ui.Fix classes",false,false);
     
     pangolin::Var<bool> settings_rotateGenerateFeatures("ui.Rotate Generate Features",false,false);
     
@@ -223,6 +223,10 @@ void PangolinDSOViewer::run()
         }
         if (pangolin::Pushed(settings_fixNoiseButt)) {
             fixNoise();
+            settings_accuracy = lastAcc;
+        }
+        if (pangolin::Pushed(settings_fixClassesButt)) {
+            fixClasses();
             settings_accuracy = lastAcc;
         }
         if (pangolin::Pushed(settings_generateFeatures)) {
@@ -468,4 +472,17 @@ void PangolinDSOViewer::rotateGenerateAndSaveFeatures() {
 void PangolinDSOViewer::fixNoise() {
     pcl_algo::fixNoise(cloud, processedTypes);
     updatePredictions();
+}
+void PangolinDSOViewer::fixClasses() {
+    pcl_algo::fixClasses2(cloud, processedTypes);
+    updatePredictions();
+    saveClasses();
+}
+void PangolinDSOViewer::saveClasses() {
+    ofstream file(savePredictionsPath);
+    file << "pred_class" << endl;
+    for (auto t : processedTypes) {
+        file << (int)t << endl;
+    }
+    file.close();
 }

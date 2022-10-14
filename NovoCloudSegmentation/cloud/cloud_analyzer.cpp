@@ -12,12 +12,14 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/pca.h>
+#include <pcl/common/geometry.h>
 #include <unordered_set>
 #include "plane.hpp"
 #include <chrono>
 #include <pcl/features/fpfh_omp.h>
 #include <iomanip>
 #include <iostream>
+#include <unordered_map>
 
 using namespace std;
 using namespace cv;
@@ -44,6 +46,42 @@ PclCloud::Ptr makeCloud(const std::vector<cv::Point3f> &cloud) {
                                   cloud[i].z);
     }
     return pclCloud;
+}
+
+void connectedComponentsInRadius(PclTree &tree, int seedIdx, float radius, float stepRadius, std::vector<int> &outIdxs) {
+    vector<int> indexes;
+    vector<float> sqrDists;
+    tree.radiusSearch(seedIdx, radius, indexes, sqrDists);
+    // сохраняем какие индексы могут участвовать при поиске шагами
+    // так по идее быстрей должно работать, чем после псотоянно сравнивать дистанцию
+    const unordered_set<int> allowedIdxs(indexes.begin(), indexes.end());
+    
+    unordered_set<int> processedIdx;
+    unordered_set<int> toProcessIdx = {seedIdx};
+    
+    while (toProcessIdx.size()) {
+        auto begin = toProcessIdx.begin();
+        int idx = *begin;
+        toProcessIdx.erase(begin);
+        processedIdx.insert(idx);
+        
+        tree.radiusSearch(idx, stepRadius, indexes, sqrDists);
+        for (int i : indexes) {
+            if (processedIdx.count(i)) continue;
+            if (allowedIdxs.count(i) == 0) continue;
+            
+            toProcessIdx.insert(i);
+        }
+    }
+    outIdxs = vector<int>(processedIdx.begin(), processedIdx.end());
+}
+
+std::unordered_map<Type, int> countTypes(const vector<int> &idxs, const vector<Type>  &types) {
+    unordered_map<Type, int> result;
+    for (int i : idxs) {
+        result[types[i]]++;
+    }
+    return result;
 }
 
 void filterIndexes(const vector<float> &reflectance, float minRef, float maxRef, const vector<int> &origIdxs, vector<int> &outIdxs) {
@@ -78,6 +116,17 @@ float getMedianGroundHeight(PointCloudRef cloud) {
     }
     
     size_t pos = (hArr.size() * 0.9);
+    nth_element(hArr.begin(), hArr.begin() + pos, hArr.end());
+    return hArr[pos];
+}
+float getLocalMedianGroundHeight(PointCloudRef cloud, const vector<int> &indexes) {
+    vector<float> hArr;
+    hArr.reserve(indexes.size());
+    for (int i : indexes) {
+        hArr.push_back(cloud->points[i].z);
+    }
+    
+    size_t pos = (hArr.size() * 0.8);
     nth_element(hArr.begin(), hArr.begin() + pos, hArr.end());
     return hArr[pos];
 }
@@ -329,4 +378,136 @@ void fixSupports(PointCloudRef cloud, std::vector<Type> &inOutTypes) {
 //    for (int i = 0; i < )
 }
 
+
+
+void fixClasses(PointCloudRef cloud, std::vector<Type> &outTypes) {
+    PclCloud::Ptr pclCloud = makeCloud(cloud->points);
+    PclTree kdtree;
+    kdtree.setInputCloud(pclCloud);
+    PclPCA pca;
+    pca.setInputCloud(pclCloud);
+    float medianGround = getMedianGroundHeight(cloud);
+    
+    outTypes = cloud->classes;
+    const auto &inTypes = cloud->classes;
+    vector<int> changeTypeCount = {0, 0, 0};
+    const int size = (int)cloud->points.size();
+    unordered_set<int> contactNetworkIdx;
+    for (int i = 0; i < size; i++) {
+        if (i%40000 == 0) {
+            cout << i << " / " << size << endl;
+            for (int val : changeTypeCount) cout << val << " ";
+            cout << endl;
+        }
+        if (!(inTypes[i] == TypeGreenery || inTypes[i] == TypeNoise)) {
+            continue;
+        }
+        vector<int> closestConnectedIndexes;
+        connectedComponentsInRadius(kdtree, i, 1.0, 0.4, closestConnectedIndexes);
+        if (closestConnectedIndexes.size() < 4) {
+//            if (inTypes[i] != TypeNoise) {
+//                outTypes[i] = TypeNoise;
+//                changeTypeCount[0]++;
+//            }
+            continue;
+        }
+        
+//        pca.setIndices(make_shared<vector<int>>(closestConnectedIndexes));
+//        auto vals = pca.getEigenValues();
+//        if (vals[0] / vals[1] > 4) {
+//            // it's some line
+//            auto vecDir = pca.getEigenVectors().col(0);
+//            bool vertical = abs(vecDir.z()) > 0.8;
+//            if (!vertical && inTypes[i] == TypeNoise) {
+//                outTypes[i] = TypeContactNetwork;
+//                changeTypeCount[1]++;
+//                continue;
+//            }
+//        }
+        
+        auto types = countTypes(closestConnectedIndexes, inTypes);
+        vector<int> counts;
+        Type maxType = TypeUnknown; int maxTypeCount = 0;
+        for (auto &t : types) {
+            counts.push_back(t.second);
+            if (maxTypeCount < t.second) {
+                maxTypeCount = t.second;
+                maxType = t.first;
+            }
+        }
+        sort(counts.begin(), counts.end());
+        if (counts.size() > 1 && maxType == TypeSupports && inTypes[i] == TypeGreenery) {
+            outTypes[i] = maxType;
+            changeTypeCount[1]++;
+            continue;
+        }
+        float h = cloud->points[i].z - medianGround;
+        if (counts.size() > 1 && maxType == TypeContactNetwork && maxType != inTypes[i] && h > 3) {
+            
+            for (int idx : closestConnectedIndexes) {
+                if (inTypes[idx] == inTypes[i] && outTypes[idx] != TypeContactNetwork) {
+                    contactNetworkIdx.insert(idx);
+                }
+            }
+            contactNetworkIdx.insert(i);
+        }
+        changeTypeCount[2] = contactNetworkIdx.size();
+    } 
+    for (int idx : contactNetworkIdx) {
+        outTypes[idx] = TypeContactNetwork;
+    }
+    cout << "Auto fix types count: ";
+    for (int val : changeTypeCount) cout << val << " ";
+    cout << endl;
+}
+
+void fixClasses2(PointCloudRef cloud, std::vector<Type> &outTypes) {
+    PclCloud::Ptr pclCloud = makeCloud(cloud->points);
+    PclTree kdtree;
+    kdtree.setInputCloud(pclCloud);
+    PclPCA pca;
+    pca.setInputCloud(pclCloud);
+    float medianGround = getMedianGroundHeight(cloud);
+    
+    outTypes = cloud->classes;
+    const auto &inTypes = cloud->classes;
+    vector<int> changeTypeCount = {0, 0, 0};
+    const int size = (int)cloud->points.size();
+    unordered_set<int> contactNetworkIdx;
+    for (int i = 0; i < size; i++) {
+        if (i%40000 == 0) {
+            cout << i << " / " << size << endl;
+            for (int val : changeTypeCount) cout << val << " ";
+            cout << endl;
+        }
+        const auto &p = cloud->points[i];
+        float h = p.z - medianGround;
+        if (inTypes[i] == TypeNoise && (p.x + p.y > -20) && h < 1) {
+//            continue;
+            // process
+        } else {
+            continue;
+        }
+        vector<int> closestConnectedIndexes;
+        connectedComponentsInRadius(kdtree, i, 0.7, 0.2, closestConnectedIndexes);
+        if (closestConnectedIndexes.size() < 10) {
+//            if (inTypes[i] != TypeNoise) {
+//                outTypes[i] = TypeNoise;
+//                changeTypeCount[0]++;
+//            }
+            continue;
+        }
+        float localGround = getLocalMedianGroundHeight(cloud, closestConnectedIndexes);
+        
+        if (p.x + p.y > 20 && p.z > localGround) {
+            outTypes[i] = TypeGreenery;
+            changeTypeCount[0]++;
+        } else {
+            outTypes[i] = TypeGround;
+            changeTypeCount[1]++;
+        }
+    }
+}
+
 } // namespace pcl_algo
+

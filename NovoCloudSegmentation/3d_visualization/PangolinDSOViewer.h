@@ -55,6 +55,7 @@ public:
     void updateCloud(PointCloudRef cloud, float keepPercentSize);
     std::string origCloudPath;
     std::string predictionsPath;
+    std::string savePredictionsPath;
     
 private:
     PointCloudRef cloud;
@@ -102,5 +103,7 @@ private:
     // fix cloud
     
     void fixNoise();
+    void fixClasses();
+    void saveClasses();
 };
 
